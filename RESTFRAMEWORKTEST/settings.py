@@ -28,10 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get('', 'localhost').split(' ')
-ALLOWED_HOSTS.append('localhost')
-ALLOWED_HOSTS.append('https://fastfoodapi2.onrender.com')
-ALLOWED_HOSTS.append('fastfoodapi2.onrender.com')
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = ['django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
