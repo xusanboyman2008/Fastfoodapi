@@ -26,10 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-)wx((d2@ja+3gieh#7ypiyjli7z_748=bdhzs38dzkc8_7g@cx'
 SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False) == 'True'
+DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(' ')
-
+ALLOWED_HOSTS = os.environ.get('', 'localhost').split(' ')
+ALLOWED_HOSTS.append('localhost')
+ALLOWED_HOSTS.append('https://fastfoodapi2.onrender.com')
+ALLOWED_HOSTS.append('fastfoodapi2.onrender.com')
 # Application definition
 
 INSTALLED_APPS = ['django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
