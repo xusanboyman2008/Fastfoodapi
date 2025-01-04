@@ -6,7 +6,7 @@ from rest_framework.authentication import get_authorization_header
 from rest_framework.utils import json
 
 from decorator import check_token
-from .models import ExpiringToken
+from .models import ExpiringToken, User
 
 
 @csrf_exempt
@@ -46,6 +46,20 @@ def login(request):
 
     return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
+
+@csrf_exempt
+def create_user(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        if not username:
+            return JsonResponse({'error': 'Username is required'}, status=400)
+        if not password:
+            return JsonResponse({'error': 'Password is required'}, status=400)
+        if username not in User.objects.all():
+            user = User.objects.create_user(username=username, password=password)
+        else:
+            return JsonResponse({'error': 'Username already exists'}, status=400)
 
 @csrf_exempt  # Optional, depending on your CSRF setup for API views
 def logout(request):
