@@ -27,7 +27,7 @@ def getRoutes(request):
     measurement.save()
     routes =  {
             'Name': 'API',
-            'path': 'http://127.0.0.1:8000/api/',
+            'path': 'https://fastfoodapi2.onrender.com/api/',
             'description': 'Main API endpoint',
         }
     return Response(routes)
