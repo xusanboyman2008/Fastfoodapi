@@ -1,5 +1,6 @@
 from django.db import models
 
+from AUTH_USER.models import User
 
 
 class StockType(models.Model):
@@ -34,6 +35,7 @@ class Stock(models.Model):
     amount = models.FloatField(null=True)
     size = models.FloatField(null=True, blank=True)
     measurement_unit = models.ForeignKey(Measurement, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
     deleted = models.BooleanField(default=False)
@@ -93,10 +95,6 @@ class Recipe(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.TextField(max_length=100,null=True)
     changes = models.TextField(null=True,blank=True)
-    if changes:
-        change_price = models.FloatField(null=True)
-    else:
-        change_price = models.FloatField(null=True,blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
     deleted = models.BooleanField(default=False)
@@ -108,13 +106,28 @@ class Recipe(models.Model):
 
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
+    recipe = models.ManyToManyField(Recipe)
     name = models.CharField(max_length=100, null=False)
     real_price = models.FloatField(null=False)
-    selling_price = models.FloatField(blank=False, null=False)
+    selling_price = models.FloatField(null=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
     deleted = models.BooleanField(default=False)
-    recipe = models.ManyToManyField(Recipe)
 
     def __str__(self):
         return self.name
+    
+
+class SellProduct(models.Model):
+    id = models.AutoField(primary_key=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    changes = models.TextField(null=True,blank=True)
+    price = models.FloatField(null=False)
+    updated_price = models.FloatField(null=False)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.product.name

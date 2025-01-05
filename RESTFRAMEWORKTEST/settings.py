@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)wx((d2@ja+3gieh#7ypiyjli7z_748=bdhzs38dzkc8_7g@cx'
-# SECRET_KEY = os.environ.get('SECRET_KEY')
+# SECRET_KEY = 'django-insecure-)wx((d2@ja+3gieh#7ypiyjli7z_748=bdhzs38dzkc8_7g@cx'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -78,7 +78,8 @@ ROOT_URLCONF = 'RESTFRAMEWORKTEST.urls'
 
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3', }}
 # database_url = os.environ.get('DATABASE_URL')
-# DATABASES['default'] = dj_database_url.parse(database_url)
+database_url = 'postgresql://xsuanboyman_user:QsChePD3RwTMifJhQt2ndeiMuxlJdORg@dpg-ctsnn35umphs73fo99vg-a.oregon-postgres.render.com/xsuanboyman'
+DATABASES['default'] = dj_database_url.parse(database_url)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
