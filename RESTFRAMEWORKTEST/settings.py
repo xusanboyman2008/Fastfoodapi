@@ -77,8 +77,8 @@ ROOT_URLCONF = 'RESTFRAMEWORKTEST.urls'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3', }}
-# database_url = os.environ.get('DATABASE_URL')
-database_url = 'postgresql://xsuanboyman_user:QsChePD3RwTMifJhQt2ndeiMuxlJdORg@dpg-ctsnn35umphs73fo99vg-a.oregon-postgres.render.com/xsuanboyman'
+database_url = os.environ.get('DATABASE_URL')
+#database_url = 'postgresql://xsuanboyman_user:QsChePD3RwTMifJhQt2ndeiMuxlJdORg@dpg-ctsnn35umphs73fo99vg-a.oregon-postgres.render.com/xsuanboyman'
 DATABASES['default'] = dj_database_url.parse(database_url)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
