@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
 from api import views
 from api.views import RecipeViewSet, IngredientGramViewSet, MeasurementViewSet, ProductViewSet, IngredientViewSet, StockTypeViewSet
 
@@ -18,9 +17,8 @@ router.register(r'recipes', RecipeViewSet)
 router.register(r'ingredient-grams', IngredientGramViewSet)
 router.register(r'measurements', MeasurementViewSet)
 router.register(r'stockType',StockTypeViewSet)
-
 urlpatterns = [
-    # Admin URL doesn't require token checking by this decorator
+    path('api-auth/', include('rest_framework.urls')),  # DRF login/logout endpoints
     path('admin/', admin.site.urls),
 
     # Include API router URLs

@@ -1,27 +1,33 @@
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import BaseAuthentication, get_authorization_header
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.authentication import get_authorization_header
+from rest_framework.response import Response
+
 from AUTH_USER.models import ExpiringToken
+
 
 class ExpiringTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        # Extract token from the Authorization header
-        auth_header = get_authorization_header(request).decode("utf-8")
+        # Log all headers for debugging
+        print("Headers:", request.headers)
 
-        if not auth_header or not auth_header.startswith("Bearer "):
-            raise AuthenticationFailed('Authentication credentials were not provided.')
+        # Extract the Authorization header
+        auth_header = get_authorization_header(request).decode('utf-8')
+        print("Authorization Header:", auth_header)  # Debugging
 
+        if not auth_header or not auth_header.startswith('Token '):
+            return None
+
+        # Extract the token key
         token_key = auth_header.split()[1]
 
-        # Try to get the token from the database
         try:
             token = ExpiringToken.objects.get(key=token_key)
         except ExpiringToken.DoesNotExist:
-            raise AuthenticationFailed('Invalid token or token not found.')
+            raise AuthenticationFailed('Invalid token.')
 
-        # Check if the token has expired
+        # Check if the token is expired
         if token.is_expired():
             raise AuthenticationFailed('Token has expired. Please log in again.')
 
-        # If token is valid, return the user and token
-        return token.user, token  # Here, you can return the associated user if needed
+        # Return the user and token
+        return token.user, token

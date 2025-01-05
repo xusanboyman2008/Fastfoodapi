@@ -9,6 +9,22 @@ from .serializer import ProductSerializer, RecipeSerializer, IngredientGramSeria
 
 @api_view(['GET'])
 def getRoutes(request):
+    measurement = Measurement.objects.create(name="Kg", type=StockType.objects.create(name='Go\'sh mahsuloti'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Liter", type=StockType.objects.create(name='Suv'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Gram", type=StockType.objects.create(name='Go\'sh mahsuloti'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="MilliLiter", type=StockType.objects.create(name='Suv'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Dona", type=StockType.objects.create(name='Meva'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Kg", type=StockType.objects.create(name='Meva'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Dona", type=StockType.objects.create(name='Non mahsuloti'))
+    measurement.save()
+    measurement = Measurement.objects.create(name="Cm", type=StockType.objects.create(name='Non mahsuloti'))
+    measurement.save()
     routes =  {
             'Name': 'API',
             'path': 'http://127.0.0.1:8000/api/',
