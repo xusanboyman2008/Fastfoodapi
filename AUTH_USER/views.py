@@ -52,14 +52,23 @@ def create_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+
+        # Validate username and password
         if not username:
             return JsonResponse({'error': 'Username is required'}, status=400)
         if not password:
             return JsonResponse({'error': 'Password is required'}, status=400)
-        if username not in User.objects.all():
-            user = User.objects.create_user(username=username, password=password)
-        else:
+
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
             return JsonResponse({'error': 'Username already exists'}, status=400)
+
+        # Create new user
+        user = User.objects.create_user(username=username, password=password,email='<EMAIL>')
+        return JsonResponse({'message': 'User created successfully'}, status=201)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt  # Optional, depending on your CSRF setup for API views
 def logout(request):
