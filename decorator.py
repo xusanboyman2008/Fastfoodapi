@@ -43,7 +43,7 @@ def check_token(func):
             return JsonResponse({'error': 'Invalid token or token not found.'}, status=401)
 
         # Check if the token is expired
-        if not token.is_expired():
+        if token.is_expired():
             return JsonResponse({'error': 'Token has expired. Please log in again.'}, status=401)
 
         # Continue to the original view if token is valid
