@@ -34,7 +34,7 @@ class Stock(models.Model):
     selling_price = models.FloatField(null=True)
     amount = models.FloatField(null=True)
     size = models.FloatField(null=True, blank=True)
-    measurement_unit = models.ForeignKey(Measurement, on_delete=models.CASCADE)
+    measurement_unit = models.ForeignKey(Measurement,on_delete=models.CASCADE,null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
@@ -75,12 +75,14 @@ class Stock(models.Model):
             for product in related_products:
                 product.selling_price = self.selling_price  # Update selling_price of the product
                 product.save()
+    def __str__(self):
+        return f"{self.name}: {self.type}"
 
 
 class IngredientGram(models.Model):
     id = models.AutoField(primary_key=True)
     ingredient = models.ForeignKey(Stock, on_delete=models.CASCADE)
-    amount = models.FloatField()
+    amount = models.FloatField(null=True,blank=True)
     # measure_unit = models.ForeignKey(Measurement, on_delete=models.CASCADE,blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
@@ -116,6 +118,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ["-id"]
     
 
 class SellProduct(models.Model):

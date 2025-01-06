@@ -30,9 +30,8 @@ class StockTypeSerializer(serializers.ModelSerializer):
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
-    measurement_unit = serializers.CharField(read_only=True)
+    measurement_unit = serializers.PrimaryKeyRelatedField(queryset=Measurement.objects.all(),many=True)
     types = serializers.PrimaryKeyRelatedField(queryset=StockType.objects.all(), source='type',
-                                               # Assuming 'measurement_unit' is the field name in your model
                                                write_only=True)
     type = StockTypeSerializer(read_only=True)  # Use StockTypeSerializer here
 
@@ -42,21 +41,20 @@ class MeasurementSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    measurement_unit = MeasurementSerializer(read_only=True, help_text='Yangi mahsulot nomini kiriting',
-                                             allow_null=False)
+    measurement_unit = MeasurementSerializer(read_only=True, help_text='Yangi mahsulot nomini kiriting')
 
-    measurements = serializers.PrimaryKeyRelatedField(allow_null=False, queryset=Measurement.objects.all(),
+    measurements = serializers.PrimaryKeyRelatedField(queryset=Measurement.objects.all(),
                                                       source='measurement_unit', write_only=True,
                                                       help_text='Measurement ni qo`shish uchun <a href="/api/measurements/" target="_self">StockType</a>')
-    users = serializers.PrimaryKeyRelatedField(allow_null=False, queryset=Measurement.objects.all(), source='users',
-                                               write_only=True, )
+
+    # users = serializers.PrimaryKeyRelatedField(allow_null=False, queryset=Measurement.objects.all(), source='users',
+    #                                            write_only=True, )
 
     class Meta:
         model = Stock
-        fields = ['id', 'name', 'real_price', 'selling_price', 'measurement_unit', 'user', 'measurements', 'created',
+        fields = ['id', 'name', 'real_price', 'selling_price', 'user', 'measurement_unit', 'measurements', 'created',
                   'updated',
                   'deleted']
-
 
 
 class IngredientGramSerializer(serializers.ModelSerializer):
@@ -74,7 +72,7 @@ class IngredientGramSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    ingredient = IngredientGramSerializer(many=True, read_only=True)  # Expand ingredient details
+    ingredient = IngredientGramSerializer(read_only=True,many=True)  # Expand ingredient details
     ingredients = serializers.PrimaryKeyRelatedField(queryset=IngredientGram.objects.all(), source='ingredient',
                                                      many=True, write_only=True,
                                                      help_text="Ingridentini 2 va undan ortiqini tanlash uchun \"ctrl\" ni bosib turib tanlan."
@@ -86,12 +84,13 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    recipe = RecipeSerializer(many=True, read_only=True)
+    recipe = RecipeSerializer(read_only=True,many=True)
     recipe_id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all(), source='recipe', write_only=True,
                                                    help_text='Recipe ID ni <a href="/api/recipes/" target="_self">Recipe</a> bo‘limidan tuzing va bu yerda mahsulotingizni yarating', )
-    real_cost = serializers.SerializerMethodField()
+
+    # real_cost = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'selling_price', 'recipe', 'recipe_id', 'real_cost', 'created', 'updated', 'deleted',
+        fields = ['id', 'name', 'selling_price', 'recipe', 'recipe_id', 'created', 'updated', 'deleted',
                   'real_price']

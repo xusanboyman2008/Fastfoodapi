@@ -50,7 +50,6 @@ def GetProduct(request, pk):
 
 class CustomModelViewSet(viewsets.ModelViewSet):
     def dispatch(self, request, *args, **kwargs):
-        # Apply the check_token decorator to every method call
         wrapped_view = check_token(super().dispatch)
         return wrapped_view(request, *args, **kwargs)
 class ProductViewSet(CustomModelViewSet):

@@ -1,24 +1,20 @@
+from django.http import JsonResponse
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.response import Response
-
 from AUTH_USER.models import ExpiringToken
 
 
 class ExpiringTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        # Log all headers for debugging
-        print("Headers:", request.headers)
 
-        # Extract the Authorization header
-        auth_header = get_authorization_header(request).decode('utf-8')
-        print("Authorization Header:", auth_header)  # Debugging
+        auth_header = get_authorization_header(request)
+        if not auth_header:
+            return JsonResponse({'error': 'Missing Authorization header.'}, status=401)
 
-        if not auth_header or not auth_header.startswith('Token '):
-            return None
+        auth_header = auth_header.decode("utf-8").strip()
 
-        # Extract the token key
         token_key = auth_header.split()[1]
+        print(token_key)
 
         try:
             token = ExpiringToken.objects.get(key=token_key)
@@ -27,7 +23,7 @@ class ExpiringTokenAuthentication(BaseAuthentication):
 
         # Check if the token is expired
         if token.is_expired():
-            raise AuthenticationFailed('Token has expired. Please log in again.')
+            return JsonResponse({'error': 'Token has expired. Please log in again.'}, status=401)
 
         # Return the user and token
         return token.user, token

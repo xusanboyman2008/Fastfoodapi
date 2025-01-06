@@ -12,7 +12,6 @@ def login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         role = request.POST.get("role")
-        # Validate input
         if not username:
             return JsonResponse({'error': 'Username is required'}, status=400)
         if not password:
@@ -75,7 +74,6 @@ def create_user(request):
 def logout(request):
     # Get the token from the Authorization header
     auth_header = get_authorization_header(request).decode("utf-8")
-
     if not auth_header or not auth_header.startswith("Bearer "):
         return JsonResponse({'error': 'Authentication credentials were not provided.'}, status=401)
 
@@ -139,7 +137,7 @@ def get_user(request, user_id):
         return JsonResponse({'user': user})
     return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
-
+@csrf_exempt
 def delete_user(request, user_id):
     if request.method == "POST":
         user = User.objects.get(id=user_id)
