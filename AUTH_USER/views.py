@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authentication import get_authorization_header
+
 from .models import ExpiringToken, User, Permission, Permissions
 from .serializer import UserSerializer, PermissionsSerializer
 
@@ -52,19 +53,24 @@ def create_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-
+        role = request.POST.get("role")
         # Validate username and password
         if not username:
             return JsonResponse({'error': 'Username is required'}, status=400)
         if not password:
             return JsonResponse({'error': 'Password is required'}, status=400)
+        if role not in ['admin', 'manager']:
+            return JsonResponse({'error': 'Invalid role', 'data': role}, status=400)
 
         # Check if username already exists
         if User.objects.filter(username=username).exists():
             return JsonResponse({'error': 'Username already exists'}, status=400)
 
         # Create new user
-        user = User.objects.create_user(username=username, password=password, email='<EMAIL>')
+        if role in ['admin', 'manager']:
+            user = User.objects.create_user(username=username, password=password, email=username, role=role)
+        else:
+            user = User.objects.create_user(username=username, password=password, email=username)
         return JsonResponse({'message': 'User created successfully'}, status=201)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -137,6 +143,7 @@ def get_user(request, user_id):
         return JsonResponse({'user': user})
     return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
+
 @csrf_exempt
 def delete_user(request, user_id):
     if request.method == "POST":
@@ -167,6 +174,7 @@ def create_permission(request):
         serializer = PermissionsSerializer(permissions, many=True)
 
         return JsonResponse({'permissions': serializer.data}, status=200)
+
 
 @csrf_exempt
 def update_permission(request, permission_id):

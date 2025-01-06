@@ -9,27 +9,27 @@ from .serializer import ProductSerializer, RecipeSerializer, IngredientGramSeria
 
 @api_view(['GET'])
 def getRoutes(request):
-    measurement = Measurement.objects.create(name="Kg", type=StockType.objects.create(name='Go\'sh mahsuloti'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Liter", type=StockType.objects.create(name='Suv'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Gram", type=StockType.objects.create(name='Go\'sh mahsuloti'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="MilliLiter", type=StockType.objects.create(name='Suv'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Dona", type=StockType.objects.create(name='Meva'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Kg", type=StockType.objects.create(name='Meva'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Dona", type=StockType.objects.create(name='Non mahsuloti'))
-    measurement.save()
-    measurement = Measurement.objects.create(name="Cm", type=StockType.objects.create(name='Non mahsuloti'))
-    measurement.save()
+
     routes =  {
             'Name': 'API',
             'path': 'https://fastfoodapi2.onrender.com/api/',
             'description': 'Main API endpoint',
         }
+    stock_types = [
+        ('Go\'sh mahsuloti', 'Kg'),
+        ('Suv', 'Liter'),
+        ('Go\'sh mahsuloti', 'Gram'),
+        ('Suv', 'MilliLiter'),
+        ('Meva', 'Dona'),
+        ('Meva', 'Kg'),
+        ('Non mahsuloti', 'Dona'),
+        ('Non mahsuloti', 'Cm'),
+    ]
+
+    for stock_type_name, measurement_name in stock_types:
+        stock_type, _ = StockType.objects.get_or_create(name=stock_type_name)  # Avoid duplicates
+        Measurement.objects.get_or_create(name=measurement_name, type=stock_type)  # Avoid duplicates
+
     return Response(routes)
 
 

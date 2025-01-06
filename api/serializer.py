@@ -30,14 +30,14 @@ class StockTypeSerializer(serializers.ModelSerializer):
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
-    measurement_unit = serializers.PrimaryKeyRelatedField(queryset=Measurement.objects.all(),many=True)
+    # measurement_unit = StockTypeSerializer()
     types = serializers.PrimaryKeyRelatedField(queryset=StockType.objects.all(), source='type',
                                                write_only=True)
-    type = StockTypeSerializer(read_only=True)  # Use StockTypeSerializer here
+    type = StockTypeSerializer(read_only=True)
 
     class Meta:
         model = Measurement
-        fields = ['id', 'name', 'type', 'types', 'measurement_unit', 'created', 'updated', 'deleted']
+        fields = ['id', 'name', 'type', 'types', 'created', 'updated', 'deleted']
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -72,11 +72,10 @@ class IngredientGramSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    ingredient = IngredientGramSerializer(read_only=True,many=True)  # Expand ingredient details
-    ingredients = serializers.PrimaryKeyRelatedField(queryset=IngredientGram.objects.all(), source='ingredient',
-                                                     many=True, write_only=True,
-                                                     help_text="Ingridentini 2 va undan ortiqini tanlash uchun \"ctrl\" ni bosib turib tanlan."
-                                                               "Yangi Ingredient yaratish uchun <a href='/api/ingredient-grams/' target='_self'>Ingredient</a> ")
+    ingredient =IngredientGramSerializer(read_only=True)
+    ingredients = serializers.PrimaryKeyRelatedField(
+        queryset=IngredientGram.objects.all(), many=True, write_only=True
+    )
 
     class Meta:
         model = Recipe

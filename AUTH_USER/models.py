@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=150)
-    email = models.EmailField(max_length=150, unique=True,blank=True,null=True)
+    email = models.EmailField(max_length=150, unique=True,blank=True)
     bio = models.TextField(blank=True,null=True)
     avatar = models.ImageField(blank=True,null=True)
     role = models.CharField(max_length=150, default="User")
