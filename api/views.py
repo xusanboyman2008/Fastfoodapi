@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from api.models import Product, Measurement, Recipe, IngredientGram, Stock, StockType
 from decorator import check_token
@@ -29,7 +30,6 @@ def getRoutes(request):
     for stock_type_name, measurement_name in stock_types:
         stock_type, _ = StockType.objects.get_or_create(name=stock_type_name)  # Avoid duplicates
         Measurement.objects.get_or_create(name=measurement_name, type=stock_type)  # Avoid duplicates
-
     return Response(routes)
 
 
@@ -53,16 +53,23 @@ class CustomModelViewSet(viewsets.ModelViewSet):
         wrapped_view = check_token(super().dispatch)
         return wrapped_view(request, *args, **kwargs)
 class ProductViewSet(CustomModelViewSet):
-    queryset = Product.objects.prefetch_related('recipe__ingredient').all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 class RecipeViewSet(CustomModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    def create(self, request, *args, **kwargs):
+        # Handle the data from x-www-form-urlencoded
+        data = request.data
+        # Process or validate the data
+        return super().create(request, *args, **kwargs)
 
-class IngredientGramViewSet(CustomModelViewSet):
+class IngredientGramViewSet(viewsets.ModelViewSet):
     queryset = IngredientGram.objects.all()
     serializer_class = IngredientGramSerializer
+    permission_classes = [AllowAny]
+
 
 class StockTypeViewSet(CustomModelViewSet):
     queryset = StockType.objects.all()

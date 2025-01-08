@@ -1,7 +1,6 @@
-from django.utils.safestring import mark_safe
 from rest_framework import serializers
 
-# from rest_framework.exceptions import AuthenticationFailed
+from AUTH_USER.serializer import UserSerializer
 from .models import Measurement, Stock, IngredientGram, Recipe, Product, StockType
 
 
@@ -26,7 +25,7 @@ from .models import Measurement, Stock, IngredientGram, Recipe, Product, StockTy
 class StockTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockType
-        fields = '__all__'
+        fields = ['id', 'name', 'created', 'updated', 'deleted']
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
@@ -41,55 +40,31 @@ class MeasurementSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    measurement_unit = MeasurementSerializer(read_only=True, help_text='Yangi mahsulot nomini kiriting')
-
-    measurements = serializers.PrimaryKeyRelatedField(queryset=Measurement.objects.all(),
-                                                      source='measurement_unit', write_only=True,
-                                                      help_text='Measurement ni qo`shish uchun <a href="/api/measurements/" target="_self">StockType</a>')
-
-    # users = serializers.PrimaryKeyRelatedField(allow_null=False, queryset=Measurement.objects.all(), source='users',
-    #                                            write_only=True, )
+    measurement_unit = serializers.CharField(source="measurement_unit.name", read_only=True)
 
     class Meta:
         model = Stock
-        fields = ['id', 'name', 'real_price', 'selling_price', 'user', 'measurement_unit', 'measurements', 'created',
-                  'updated',
-                  'deleted']
-
+        fields = ['id', 'name', 'real_price', 'selling_price', 'measurement_unit', 'size', 'amount', 'expired_at']
 
 class IngredientGramSerializer(serializers.ModelSerializer):
-    ingredient = IngredientSerializer(read_only=True)  # Include ingredient details
-    ingredient_id = serializers.PrimaryKeyRelatedField(queryset=Stock.objects.all(), source='ingredient',
-                                                       write_only=True, help_text=mark_safe(
-            'Kerak bo`lgan ritsept uchun qancha mahsulot ketishi yoziladi (Missol uchun: Dona: Sosiska -> 1 yani bir dona Sosiska kerak). '
-            'Mahsulot qo\'shish uchun <a href="/api/stock/" target="_self">Stock</a>.'))
-
-    # measurement_id = serializers.PrimaryKeyRelatedField(queryset=Measurement.objects.all(),write_only=True,source='measurement_unit',)
+    ingredient_details = IngredientSerializer(source="ingredient", read_only=True)
 
     class Meta:
         model = IngredientGram
-        fields = ['id', 'ingredient_id', 'amount', 'ingredient', 'created', 'updated', 'deleted']
-
+        fields = ['id', 'amount', 'ingredient_details']
 
 class RecipeSerializer(serializers.ModelSerializer):
-    ingredient =IngredientGramSerializer(read_only=True)
-    ingredients = serializers.PrimaryKeyRelatedField(
-        queryset=IngredientGram.objects.all(), many=True, write_only=True
-    )
+    ingredients = IngredientGramSerializer(source="ingredient", many=True, read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'ingredient', 'ingredients', 'created', 'updated', 'deleted']
-
+        fields = ['id', 'name', 'changes', 'changed_price', 'ingredients']
 
 class ProductSerializer(serializers.ModelSerializer):
-    recipe = RecipeSerializer(read_only=True,many=True)
-    recipe_id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all(), source='recipe', write_only=True,
-                                                   help_text='Recipe ID ni <a href="/api/recipes/" target="_self">Recipe</a> bo‘limidan tuzing va bu yerda mahsulotingizni yarating', )
-
-    # real_cost = serializers.SerializerMethodField()
+    recipe_details = RecipeSerializer(source="recipe", read_only=True)
+    selling_price = serializers.FloatField(write_only=True)
+    cost = serializers.FloatField(read_only=True,source="selling_price")
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'selling_price', 'recipe', 'recipe_id', 'created', 'updated', 'deleted',
-                  'real_price']
+        fields = ['id', 'name', 'selling_price','cost', 'real_price', 'recipe', 'recipe_details', 'created', 'updated', 'deleted']

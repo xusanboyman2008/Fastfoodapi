@@ -6,15 +6,16 @@ from AUTH_USER.models import ExpiringToken
 
 class ExpiringTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
-
         auth_header = get_authorization_header(request)
         if not auth_header:
-            return JsonResponse({'error': 'Missing Authorization header.'}, status=401)
+            raise AuthenticationFailed('Missing Authorization header.')
 
         auth_header = auth_header.decode("utf-8").strip()
 
+        if not auth_header.startswith("Bearer "):
+            raise AuthenticationFailed('Invalid authorization header format.')
+
         token_key = auth_header.split()[1]
-        print(token_key)
 
         try:
             token = ExpiringToken.objects.get(key=token_key)
@@ -23,7 +24,7 @@ class ExpiringTokenAuthentication(BaseAuthentication):
 
         # Check if the token is expired
         if token.is_expired():
-            return JsonResponse({'error': 'Token has expired. Please log in again.'}, status=401)
+            raise AuthenticationFailed('Token has expired. Please log in again.')
 
         # Return the user and token
-        return token.user, token
+        return (token.user, token)

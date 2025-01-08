@@ -14,7 +14,7 @@ router.register(r'products', ProductViewSet)
 
 router.register(r'stock', IngredientViewSet)
 router.register(r'recipes', RecipeViewSet)
-router.register(r'ingredient-grams', IngredientGramViewSet)
+router.register(r'ingredient', IngredientGramViewSet)
 router.register(r'measurements', MeasurementViewSet)
 router.register(r'stockType',StockTypeViewSet)
 urlpatterns = [

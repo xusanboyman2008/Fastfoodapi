@@ -59,8 +59,9 @@ def create_user(request):
             return JsonResponse({'error': 'Username is required'}, status=400)
         if not password:
             return JsonResponse({'error': 'Password is required'}, status=400)
-        if role not in ['admin', 'manager']:
-            return JsonResponse({'error': 'Invalid role', 'data': role}, status=400)
+        if role:
+            if role not in ['admin', 'manager']:
+                return JsonResponse({'error': 'Invalid role', 'data': role}, status=400)
 
         # Check if username already exists
         if User.objects.filter(username=username).exists():
