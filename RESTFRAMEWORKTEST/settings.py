@@ -31,7 +31,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 # Application definition
 
-INSTALLED_APPS = ['django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions',
+INSTALLED_APPS = ['django.contrib.auth',    'corsheaders',
+ 'django.contrib.contenttypes', 'django.contrib.sessions',
                   'django.contrib.admin', 'django.contrib.messages', 'django.contrib.staticfiles', 'api.apps.ApiConfig',
                   'rest_framework', 'rest_framework.authtoken', 'AUTH_USER']
 
@@ -39,6 +40,8 @@ AUTH_USER_MODEL = 'AUTH_USER.User'
 
 EXPIRING_TOKEN_LIFESPAN = datetime.timedelta(days=25)
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Temporarily comment out
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['*']
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
