@@ -40,8 +40,7 @@ AUTH_USER_MODEL = 'AUTH_USER.User'
 
 EXPIRING_TOKEN_LIFESPAN = datetime.timedelta(days=25)
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
-    'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,11 +52,29 @@ MIDDLEWARE = [
     # Temporarily comment out
 ]
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = ['*']
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-requested-with',
+    'accept',
+    'origin',
+    'user-agent',
+    'referer',
+    'accept-encoding',
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-CORS_ALLOW_HEADERS = ['authorization', 'content-type', ]
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
