@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import datetime
-from pathlib import Path
-import dj_database_url
-import AUTH_USER
 import os
+from pathlib import Path
+
+import dj_database_url
+
+import AUTH_USER
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,8 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 # Application definition
 
-INSTALLED_APPS = ['django.contrib.auth',    'corsheaders',
- 'django.contrib.contenttypes', 'django.contrib.sessions',
+INSTALLED_APPS = ['django.contrib.auth', 'corsheaders',
+                  'django.contrib.contenttypes', 'django.contrib.sessions',
                   'django.contrib.admin', 'django.contrib.messages', 'django.contrib.staticfiles', 'api.apps.ApiConfig',
                   'rest_framework', 'rest_framework.authtoken', 'AUTH_USER']
 
@@ -51,30 +53,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Temporarily comment out
 ]
-CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOW_HEADERS = [
-    'content-type',
-    'authorization',
-    'x-requested-with',
-    'accept',
-    'origin',
-    'user-agent',
-    'referer',
-    'accept-encoding',
-]
-
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = ['authorization', 'content-type', ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
