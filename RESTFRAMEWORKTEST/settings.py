@@ -34,7 +34,6 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = ['django.contrib.auth',
-                  'corsheaders',
                   'django.contrib.contenttypes',
                   'django.contrib.sessions',
                   'django.contrib.admin',
@@ -43,7 +42,9 @@ INSTALLED_APPS = ['django.contrib.auth',
                   'api.apps.ApiConfig',
                   'rest_framework',
                   'rest_framework.authtoken',
-                  'AUTH_USER']
+                  'corsheaders',
+                  'AUTH_USER'
+                  ]
 
 AUTH_USER_MODEL = 'AUTH_USER.User'
 
@@ -54,11 +55,10 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',  # Temporarily comment out
+    # 'django.middleware.csrf.CsrfViewMiddleware',  # Temporarily comment out
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Temporarily comment out
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -94,14 +94,16 @@ ROOT_URLCONF = 'RESTFRAMEWORKTEST.urls'
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3', }}
 database_url = os.environ.get('DATABASE_URL')
 # database_url = 'postgresql://xsanboyman_user:k5vNyotJFqeRMpuCXQCHf0GSsZJIjXZS@dpg-ctv0os5ds78s738lm9u0-a.oregon-postgres.render.com/xsanboyman'
-# DATABASES['default'] = dj_database_url.parse(database_url)
+DATABASES['default'] = dj_database_url.parse(database_url)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [{'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-                            {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-                            {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-                            {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', }, ]
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -118,7 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
