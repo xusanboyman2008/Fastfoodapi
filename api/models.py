@@ -10,6 +10,7 @@ class StockType(models.Model):
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
     deleted = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name
 
@@ -30,6 +31,40 @@ class Measurement(models.Model):
     def __str__(self):
         return f"{self.name}: {self.type}"
 
+class Status(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.TextField(max_length=100)
+    def __str__(self):
+        return self.name
+
+class Draft(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    real_price = models.FloatField(null=True, blank=True)
+    selling_price = models.FloatField(null=True, blank=True)
+    amount = models.FloatField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    measurement_unit = models.ForeignKey(
+        Measurement,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, null=True, blank=True)
+    expired_at = models.DateField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    updated = models.DateTimeField(auto_now=True, null=True)
+    deleted = models.BooleanField(default=False)
+
+    def expired(self):
+        if self.expired_at:
+            return timezone.now() > self.expired_at
+        else:
+            return True
+
+    def __str__(self):
+        return self.name
+
 
 class Stock(models.Model):
     id = models.AutoField(primary_key=True)
@@ -45,32 +80,31 @@ class Stock(models.Model):
         blank=False,
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
-    expired_at = models.DateField(null=False,blank=False)
+    expired_at = models.DateField(null=False, blank=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
     updated = models.DateTimeField(auto_now=True, null=True)
     deleted = models.BooleanField(default=False)
 
     def is_expired(self):
         return self.expired_at < timezone.now().date()
+
     def __str__(self):
         return f"{self.name}: {self.measurement_unit.type.name}"
+
     class Meta:
         ordering = ['-expired_at']
-
 
 
 class IngredientGram(models.Model):
     id = models.AutoField(primary_key=True)
     ingredient = models.ForeignKey(
         Stock,
-        on_delete=models.CASCADE,null=False,blank=False,related_name="ingredient"
+        on_delete=models.CASCADE, null=False, blank=False, related_name="ingredient"
     )
-    amount = models.FloatField(null=False,blank=False)
+    amount = models.FloatField(null=False, blank=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False)
-
-
 
     def __str__(self):
         return f"{self.ingredient.name} {self.amount}"
@@ -139,7 +173,7 @@ class SellProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField(null=False, blank=False)
-    changes = models.TextField(null=True,blank=True)
+    changes = models.TextField(null=True, blank=True)
     price = models.FloatField(null=False)
     updated_price = models.FloatField(null=False)
     created = models.DateTimeField(auto_now_add=True, null=True)
@@ -147,4 +181,3 @@ class SellProduct(models.Model):
 
     def __str__(self):
         return self.product.name
-

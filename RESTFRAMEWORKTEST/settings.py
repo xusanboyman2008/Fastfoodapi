@@ -33,18 +33,25 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 # Application definition
 
-INSTALLED_APPS = ['django.contrib.auth', 'corsheaders',
-                  'django.contrib.contenttypes', 'django.contrib.sessions',
-                  'django.contrib.admin', 'django.contrib.messages', 'django.contrib.staticfiles', 'api.apps.ApiConfig',
-                  'rest_framework', 'rest_framework.authtoken', 'AUTH_USER']
+INSTALLED_APPS = ['django.contrib.auth',
+                  'corsheaders',
+                  'django.contrib.contenttypes',
+                  'django.contrib.sessions',
+                  'django.contrib.admin',
+                  'django.contrib.messages',
+                  'django.contrib.staticfiles',
+                  'api.apps.ApiConfig',
+                  'rest_framework',
+                  'rest_framework.authtoken',
+                  'AUTH_USER']
 
 AUTH_USER_MODEL = 'AUTH_USER.User'
 
 EXPIRING_TOKEN_LIFESPAN = datetime.timedelta(days=25)
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',  # Temporarily comment out
@@ -57,8 +64,6 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-CORS_ALLOW_HEADERS = ['authorization', 'content-type', ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -89,7 +94,7 @@ ROOT_URLCONF = 'RESTFRAMEWORKTEST.urls'
 DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': BASE_DIR / 'db.sqlite3', }}
 database_url = os.environ.get('DATABASE_URL')
 # database_url = 'postgresql://xsanboyman_user:k5vNyotJFqeRMpuCXQCHf0GSsZJIjXZS@dpg-ctv0os5ds78s738lm9u0-a.oregon-postgres.render.com/xsanboyman'
-DATABASES['default'] = dj_database_url.parse(database_url)
+# DATABASES['default'] = dj_database_url.parse(database_url)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 

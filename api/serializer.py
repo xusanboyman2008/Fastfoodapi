@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from AUTH_USER.serializer import UserSerializer
-from .models import Measurement, Stock, IngredientGram, Recipe, Product, StockType
+from .models import Measurement, Stock, IngredientGram, Recipe, Product, StockType, Draft
 
 
 # class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -46,12 +45,14 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Stock
         fields = ['id', 'name', 'real_price', 'selling_price', 'measurement_unit', 'size', 'amount', 'expired_at']
 
+
 class IngredientGramSerializer(serializers.ModelSerializer):
     ingredient_details = IngredientSerializer(source="ingredient", read_only=True)
 
     class Meta:
         model = IngredientGram
         fields = ['id', 'amount', 'ingredient_details']
+
 
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientGramSerializer(source="ingredient", many=True, read_only=True)
@@ -60,11 +61,30 @@ class RecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ['id', 'name', 'changes', 'changed_price', 'ingredients']
 
+
+class DraftSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Draft
+        fields = ['id', 'name', 'real_price', 'selling_price', 'measurement_unit', 'amount', 'expired_at',
+                  'status', 'user']
+        read_only_fields = ['user']  # Make 'user' read-only so it's auto-assigned
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Assign the authenticated user to the 'user' field (optional)
+        validated_data['user'] = self.context['request'].user
+        return super().update(instance, validated_data)
+
+
 class ProductSerializer(serializers.ModelSerializer):
     recipe_details = RecipeSerializer(source="recipe", read_only=True)
     selling_price = serializers.FloatField(write_only=True)
-    cost = serializers.FloatField(read_only=True,source="selling_price")
+    cost = serializers.FloatField(read_only=True, source="selling_price")
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'selling_price','cost', 'real_price', 'recipe', 'recipe_details', 'created', 'updated', 'deleted']
+        fields = ['id', 'name', 'selling_price', 'cost', 'real_price', 'recipe', 'recipe_details', 'created', 'updated',
+                  'deleted']
