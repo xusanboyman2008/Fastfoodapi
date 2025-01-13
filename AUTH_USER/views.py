@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authentication import get_authorization_header
-
 from .models import ExpiringToken, User, Permission, Permissions
 from .serializer import UserSerializer, PermissionsSerializer
 
@@ -10,19 +9,40 @@ from .serializer import UserSerializer, PermissionsSerializer
 @csrf_exempt
 def login(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        role = request.POST.get("role")
+        # Handle raw JSON data
+        if request.content_type == "application/json":
+            try:
+                data = json.loads(request.body)
+                username = data.get("username")
+                password = data.get("password")
+                role = data.get("role")
+            except json.JSONDecodeError:
+                return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        # Handle form data
+        elif request.content_type == "application/x-www-form-urlencoded":
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            role = request.POST.get("role")
+
+        # Unsupported content type
+        else:
+            return JsonResponse({'error': 'Unsupported Content-Type'}, status=415)
+
+        # Validate inputs
         if not username:
             return JsonResponse({'error': 'Username is required'}, status=400)
         if not password:
             return JsonResponse({'error': 'Password is required'}, status=400)
+
+        # Authenticate user
         if not role:
             user = authenticate(request, username=username, password=password)
         else:
-            if role not in ['admin', 'manager']:
+            if role not in ['admin', 'manager','user']:
                 return JsonResponse({'error': 'Invalid role', 'data': role}, status=400)
             user = authenticate(request, username=username, password=password, role=role)
+
         if user is None:
             return JsonResponse({'error': 'Invalid credentials'}, status=401)
 
