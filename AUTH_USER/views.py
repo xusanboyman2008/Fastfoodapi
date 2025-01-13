@@ -10,7 +10,6 @@ import json
 @csrf_exempt
 def login(request):
     if request.method == "POST":
-        # Handle raw JSON data
         if request.content_type == "application/json":
             try:
                 data = json.loads(request.body)
