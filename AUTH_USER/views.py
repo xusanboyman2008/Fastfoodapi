@@ -18,14 +18,10 @@ def login(request):
                 role = data.get("role")
             except json.JSONDecodeError:
                 return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-        # Handle form data
-        elif request.content_type == "application/x-www-form-urlencoded":
+        elif request.content_type in ["application/form-data", "application/x-www-form-urlencoded"]:
             username = request.POST.get("username")
             password = request.POST.get("password")
             role = request.POST.get("role")
-
-        # Unsupported content type
         else:
             return JsonResponse({'error': 'Unsupported Content-Type'}, status=415)
 
@@ -39,9 +35,9 @@ def login(request):
         if not role:
             user = authenticate(request, username=username, password=password)
         else:
-            if role not in ['admin', 'manager','user']:
+            if role not in ['admin', 'manager', 'user']:
                 return JsonResponse({'error': 'Invalid role', 'data': role}, status=400)
-            user = authenticate(request, username=username, password=password, role=role)
+            user = authenticate(request, username=username, password=password)
 
         if user is None:
             return JsonResponse({'error': 'Invalid credentials'}, status=401)
@@ -55,17 +51,22 @@ def login(request):
             token = ExpiringToken.objects.create(user=user)
 
         user_data = UserSerializer(user).data
-        response = JsonResponse(
-            {'message': 'Login successful', 'expires_at': token.expires_at.isoformat(), 'token': token.key,
-             'user': user_data}
-        )
+        response_data = {
+            'message': 'Login successful',
+            'expires_at': token.expires_at.isoformat(),
+            'token': token.key,
+            'user': user_data
+        }
 
-        # Set the Authorization header in the response
-        response['Authorization'] = f'Token {token.key}'
+        response = JsonResponse(response_data)
+
+        # Attach Bearer token to the Authorization header
+        response['Authorization'] = f'Bearer {token.key}'
 
         return response
 
     return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
 
 
 @csrf_exempt
