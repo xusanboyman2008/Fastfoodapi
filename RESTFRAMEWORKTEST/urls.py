@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from tutorial.quickstart.views import UserViewSet
-
 from api import views
 from api.views import RecipeViewSet, IngredientGramViewSet, MeasurementViewSet, ProductViewSet, IngredientViewSet, \
     StockTypeViewSet, DraftViewSet
